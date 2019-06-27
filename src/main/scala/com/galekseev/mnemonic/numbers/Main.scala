@@ -1,7 +1,11 @@
 package com.galekseev.mnemonic.numbers
 
+import java.text.Collator
+import java.util.Locale
+
+import com.galekseev.mnemonic.numbers.WordFinder.{getNumber, getSentenceConstructors}
+
 import scala.io.StdIn
-import com.galekseev.mnemonic.numbers.WordFinder.{ getSentences, getNumber }
 
 // scalastyle:off
 object Main extends App {
@@ -13,12 +17,13 @@ object Main extends App {
   while (!"!".equalsIgnoreCase(input)) {
     if (isNaturalNumber(input))
       println(
-//        getWords(input)
-//        getLetters(input)
-//          .mkString(" ")
-        getSentences(input)
-          .sortWith((sentence1, sentence2) => sentence1.size < sentence2.size)
-          .map(words => words.map(_.mkString(" ")).mkString("\n"))
+//        getLetters(input).mkString(" ")
+        getSentenceConstructors(input)
+          .sortWith(numWords(_) < numWords(_))
+          .map(wordSets =>
+            wordSets.map(wordSet => sortAlphabeticallyIgnoringCase(wordSet).mkString(" "))
+              .mkString("\n")
+        )
           .mkString("\n----------\n")
       )
     else
@@ -30,4 +35,13 @@ object Main extends App {
 
   private def isNaturalNumber(s: String) =
     s.filterNot(Set('1', '2', '3', '4', '5', '6', '7', '8', '9', '0')).isEmpty
+
+  private def sortAlphabeticallyIgnoringCase(strings: Seq[String]): Seq[String] = {
+    val collator = Collator.getInstance(Locale.forLanguageTag("ru"))
+    collator.setStrength(Collator.SECONDARY)
+    strings.sortWith((a, b) => collator.compare(a, b) == -1)
+  }
+
+  private def numWords(sentence: Seq[Seq[String]]): Int =
+    sentence.size
 }

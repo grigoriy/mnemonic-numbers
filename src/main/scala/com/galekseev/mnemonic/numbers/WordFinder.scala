@@ -26,21 +26,13 @@ object WordFinder {
     'ш' -> 6,
     'щ' -> 6
   )
-  private val digitToChars = reverse(charToDigit)
   private val numToWords = parseNumToWords(Source.fromResource("words_from_freq"))
-  private val numToNouns = parseNumToWords(Source.fromResource("nouns_from_freq"))
-  private val numToVerbs = parseNumToWords(Source.fromResource("verbs_from_freq"))
-  private val numToAdjectives = parseNumToWords(Source.fromResource("adjectives_from_freq"))
+  //  private val digitToChars = reverse(charToDigit)
 
-  private def parseNumToWords(dictionary: Source): Map[String, Seq[String]] =
-    reverse(
-      dictionary.getLines()
-        .map(word => word -> wordToNumber(word))
-        .filter(_._2.nonEmpty)
-        .toMap
-    )
+  def getNumber(word: String): String =
+    wordToNumber(word)
 
-  def getSentences(number: String): Seq[Seq[Seq[String]]] = {
+  def getSentenceConstructors(number: String): Seq[Seq[Seq[String]]] = {
     var cache: Map[String, Seq[Seq[Seq[String]]]] = Map.empty
 
     def helper(number: String, accum: Seq[Seq[String]]): Seq[Seq[Seq[String]]] =
@@ -65,30 +57,21 @@ object WordFinder {
     helper(number: String, Seq.empty)
   }
 
-  def getWords(number: String): Seq[String] =
+  //  def getLetters(number: String): Seq[String] =
+  //    number.map(digit =>
+  //      new String(digitToChars(Integer.parseInt(digit.toString)).toArray)
+  //    )
+
+  private def parseNumToWords(dictionary: Source): Map[String, Seq[String]] =
+    reverse(
+      dictionary.getLines()
+        .map(word => word -> wordToNumber(word))
+        .filter(_._2.nonEmpty)
+        .toMap
+    )
+
+  private def getWords(number: String): Seq[String] =
     numToWords.getOrElse(number, Seq.empty)
-
-  def getLetters(number: String): Seq[String] =
-    number
-      .toLowerCase
-      .map(digit =>
-        new String(digitToChars(Integer.parseInt(digit.toString)).toArray)
-      )
-
-  def getNounsAndVerbsAndAdjectives(number: String): Seq[String] =
-    getNouns(number) ++ getVerbs(number) ++ getAdjectives(number)
-
-  def getNouns(number: String): Seq[String] =
-    numToNouns.getOrElse(number, Seq.empty)
-
-  def getVerbs(number: String): Seq[String] =
-    numToVerbs.getOrElse(number, Seq.empty)
-
-  def getAdjectives(number: String): Seq[String] =
-    numToAdjectives.getOrElse(number, Seq.empty)
-
-  def getNumber(word: String): String =
-    wordToNumber(word)
 
   private def wordToNumber(word: String): String =
     (for {

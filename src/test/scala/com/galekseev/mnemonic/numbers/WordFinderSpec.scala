@@ -1,7 +1,7 @@
 package com.galekseev.mnemonic.numbers
 
 import com.galekseev.BaseSpec
-import com.galekseev.mnemonic.numbers.WordFinder.{ getNumber, getNouns }
+import com.galekseev.mnemonic.numbers.WordFinder.{getNumber, getSentenceConstructors}
 
 // scalastyle:off
 class WordFinderSpec extends BaseSpec {
@@ -18,9 +18,9 @@ class WordFinderSpec extends BaseSpec {
 
     "given 5124" should {
       "return a list containing 'городок'" in {
-        val words = getNouns("5124")
+        val sentenceConstructors = getSentenceConstructors("5124")
 
-        assert(words.contains("городок"))
+        assert(sentenceConstructors.exists(_.exists(_.contains("городок"))))
       }
     }
 
